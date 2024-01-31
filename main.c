@@ -1,4 +1,5 @@
 #include "hight.h"
+#include "hight_utils.h"
 
 void viewKeySchedule(u8* SK) {
     for (int i = 0; i < 32; i++) {
@@ -8,6 +9,7 @@ void viewKeySchedule(u8* SK) {
 }
 
 int main(void) {
+    // u64 start, end, start2, end2;
 
     u8 MK[16] = { 0xff, 0xee, 0xdd, 0xcc,
                   0xbb, 0xaa, 0x99, 0x88,
@@ -17,50 +19,16 @@ int main(void) {
     //               0x44, 0x55, 0x66, 0x77,
     //               0x88, 0x99, 0xaa, 0xbb,
     //               0xcc, 0xdd, 0xee, 0xff};
+
     u8 WK[8], SK[128];
 
-    // keySchedule_Dev(WK, SK, MK);
-    // keySchedule_Std(WK, SK, MK);
-    keySchedule(WK, SK, MK);
+    // start = rdtsc();
+    // keySchedule(WK, SK, MK);
+    // end = rdtsc();
+    printf("DEV: %.3f cycles\n", measure_keySchedule_cycle(keySchedule, WK, SK, MK));
+    printf("DEV: %.3f µs\n", measure_keySchedule_time(keySchedule, WK, SK, MK)*1000000);
 
     viewKeySchedule(SK);
-
-    // for (i8 i = 0; i < 8; i++) {
-    //     for (i8 j = 0; j < 8; j++)
-    //         printf("%d, %d: SK[%03d] <- MK[%03d] + delta[%03d]\n", i, j, 16*i+j, (j >= i ) ? (j-i) : j-i+8, 16*i+j);
-    //     for (i8 j = 0; j < 8; j++)
-    //         printf("%d, %d: SK[%03d] <- MK[%03d] + delta[%03d]\n", i, j, 16*i+j+8, (j >= i ) ? (j-i)+8 : (j-i+8)+8, 16*i+j+8);
-    //     puts("");
-    // }
-
-    // for (i8 i = 0; i < 8; i++) {
-        
-    //     for (i8 j = 0; j < 8; j++) {
-    //         int idx = (16 * i + j);
-    //         printf("SK[%03d] <- MK[%03d] + delta[%03d]\n", idx, (j-i) & 7, 16*i+j);
-    //     }
-    //     for (i8 j = 0; j < 8; j++) {
-    //         int idx = (16 * i + j);
-    //         printf("SK[%03d] <- MK[%03d] + delta[%03d]\n", idx+8, ((j-i) & 7) + 8, 16*i+j+8);
-    //     }
-        
-
-    //     puts("");
-    // }
-
-    // for (int i = 1; i < 128; i++) {
-    
-    //     for (int j = 0; j < 8; j++) {
-    //         int idx = (16 * i + j) % 128;
-    //         printf("SK[%03d] <- MK[%03d] + delta[%03d]\n", idx, (j - (i % 8)) & 7, idx);
-    //     }
-    //     for (int j = 0; j < 8; j++) {
-    //         int idx = (16 * i + j) % 128;
-    //         printf("SK[%03d] <- MK[%03d] + delta[%03d]\n", idx + 8, ((j - (i % 8)) & 7) + 8, idx + 8);
-    //     }
-        
-    //     puts("");
-    // }
 
     return 0;
 }

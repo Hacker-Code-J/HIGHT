@@ -77,6 +77,8 @@
   },
   "peacock.color": "#215732",
   "files.associations": {
-    "hight.h": "c"
+    "hight.h": "c",
+    "time.h": "c",
+    "hight_config.h": "c"
   }
 }

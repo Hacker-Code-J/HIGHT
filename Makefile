@@ -8,7 +8,7 @@ VSSRCDIR=./src/aesavs
 TESTDIR=./tests
 INCDIR=./include
 
-OBJS=$(OBJDIR)/hight_core.o \
+OBJS=$(OBJDIR)/hight_core.o $(OBJDIR)/hight_utils.o \
 	$(OBJDIR)/main.o
 
 TARGET=$(BINDIR)/a.out
@@ -28,12 +28,13 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 -include $(OBJS:.o=.d)
 
 $(OBJDIR)/hight_core.o: $(SRCDIR)/hight_core.c $(INCDIR)/hight.h
+$(OBJDIR)/hight_utils.o: $(SRCDIR)/hight_utils.c $(INCDIR)/hight_utils.h
 
 clean:
 	rm -f $(OBJS) $(TARGET) $(OBJDIR)/*.d
-	# @echo "Removing AESAVS files ..."
-	# rm -rf $(KATFILES_TO_DELETE)
-	# @echo "AESAVS files removal completed  successfully."
+#	@echo "Removing AESAVS files ..."
+#	rm -rf $(KATFILES_TO_DELETE)
+#	@echo "AESAVS files removal completed  successfully."
 
 dir:
 	@mkdir -p $(OBJDIR) $(BINDIR)
