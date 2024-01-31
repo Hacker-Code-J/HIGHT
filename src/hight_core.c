@@ -35,6 +35,9 @@ void keySchedule(u8 WK[8], u8 SK[128], const u8 MK[16]) {
     }
 }
 
+
+/* Development Version */
+
 void keySchedule_Dev(u8 WK[8], u8 SK[128], const u8 MK[16]) {
     u8 i = 0;
     u8 n = 0;
@@ -165,4 +168,39 @@ void keySchedule_Dev(u8 WK[8], u8 SK[128], const u8 MK[16]) {
         SK[i] = buffer[n] + delta;
     }
 #endif
+}
+
+
+void HIGHT_Encrypt_Dev(u8* dst, const u8* src, const u8 MK[16]) {
+    u8 WK[8], SK[128];
+    keySchedule(WK, SK, MK);
+
+    u8 state[8] = {
+        src[7], src[6] + WK[3],
+        src[5], src[4] + WK[2],
+        src[3], src[2] + WK[1],
+        src[1], src[0] + WK[0]
+    };
+
+    u8 temp, temp2;
+    for (u8 i = 0; i < 32; i++) {
+        temp = state[7];
+        temp2 = state[6];
+
+        state[7] = state[6];
+        state[6] = state[5] + (F1(state[4]) ^ SK[i * 4 + 2]);
+
+        state[5] = state[4];
+        state[4] = state[3] + (F0(state[2]) ^ SK[i * 4 + 1]);
+
+        state[3] = state[2]; 
+        state[2] = state[1] + (F1(state[0]) ^ SK[i * 4 + 0]);
+
+        state[1] = state[0];
+        state[0] =     temp + (F0(   temp2) ^ SK[i * 4 + 3]);
+        
+        // if (i == 31) {
+
+        // }
+    }
 }
