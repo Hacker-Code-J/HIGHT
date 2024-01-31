@@ -8,7 +8,8 @@ VSSRCDIR=./src/aesavs
 TESTDIR=./tests
 INCDIR=./include
 
-OBJS=$(OBJDIR)/main.o
+OBJS=$(OBJDIR)/hight_core.o \
+	$(OBJDIR)/main.o
 
 TARGET=$(BINDIR)/a.out
 
@@ -20,9 +21,13 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(OBJDIR)/main.o: main.c
-	$(CC) $(CFLAGS) -c main.c -o $@
+	$(CC) $(CFLAGS) -MMD -MP -c main.c -o $@
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
 
 -include $(OBJS:.o=.d)
+
+$(OBJDIR)/hight_core.o: $(SRCDIR)/hight_core.c $(INCDIR)/hight.h
 
 clean:
 	rm -f $(OBJS) $(TARGET) $(OBJDIR)/*.d
