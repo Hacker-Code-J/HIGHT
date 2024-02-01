@@ -35,8 +35,47 @@ void keySchedule(u8 WK[8], u8 SK[128], const u8 MK[16]) {
     }
 }
 
+void HIGHT_Encrypt(u8* dst, const u8* src, const u8 MK[16]) {
+    u8 WK[8], SK[128];
+    keySchedule(WK, SK, MK);
 
-/* Development Version */
+    u8 state[8] = {
+        src[0] + WK[0], src[1],
+        src[2] ^ WK[1], src[3],
+        src[4] + WK[2], src[5],
+        src[6] ^ WK[3], src[7]
+    };
+
+    // Assume F0 and F1 are already optimized and inlined
+    for (u8 i = 0; i < 31; i++) {
+        u8 t0 = state[6], t1 = state[7];
+        state[7] = t0;
+        state[6] = state[5] + (F1(state[4]) ^ SK[i * 4 + 2]);
+        state[5] = state[4];
+        state[4] = state[3] ^ (F0(state[2]) + SK[i * 4 + 1]);
+        state[3] = state[2];
+        state[2] = state[1] + (F1(state[0]) ^ SK[i * 4]);
+        state[1] = state[0];
+        state[0] = t1 ^ (F0(t0) + SK[i * 4 + 3]);
+    }
+
+    state[7] ^= (F0(state[6]) + SK[127]);
+    state[5] += (F1(state[4]) ^ SK[126]);
+    state[3] ^= (F0(state[2]) + SK[125]);
+    state[1] += (F1(state[0]) ^ SK[124]);
+
+    state[0] += WK[4];
+    state[2] ^= WK[5];
+    state[4] += WK[6];
+    state[6] ^= WK[7];
+    
+    memcpy(dst, state, 8);
+}
+
+
+
+
+/* == Development Version ======================================================== */
 
 void keySchedule_Dev(u8 WK[8], u8 SK[128], const u8 MK[16]) {
     u8 i = 0;
@@ -172,18 +211,71 @@ void keySchedule_Dev(u8 WK[8], u8 SK[128], const u8 MK[16]) {
 
 
 void HIGHT_Encrypt_Dev(u8* dst, const u8* src, const u8 MK[16]) {
+    for (int i = 15; i >= 0; --i)
+        printf("%02x:", MK[i]);
+    printf("\n\n");
+    
     u8 WK[8], SK[128];
     keySchedule(WK, SK, MK);
 
+    for(int i = 7; i >= 0; --i)
+        printf("%02x:", WK[i]);
+    printf("\n\n");
+
+    for(int i = 7; i >= 0; --i)
+        printf("%02x:", src[i]);
+    printf("\n\n");
+
+    for (int i = 0; i < 32; i++) {
+        printf("SK[%03d]||SK[%03d]||SK[%03d]||SK[%03d]: %02x%02x%02x%02x\n",
+            4*i+3, 4*i+2, 4*i+1, 4*i, SK[4*i+3], SK[4*i+2], SK[4*i+1], SK[4*i]);
+    }
+    printf("\n\n");
+
+    // u8 state[8] = {
+    //     src[7], src[6] ^ WK[3],
+    //     src[5], src[4] + WK[2],
+    //     src[3], src[2] ^ WK[1],
+    //     src[1], src[0] + WK[0]
+    // };
+
     u8 state[8] = {
-        src[7], src[6] + WK[3],
-        src[5], src[4] + WK[2],
-        src[3], src[2] + WK[1],
-        src[1], src[0] + WK[0]
+        src[0] + WK[0], src[1],
+        src[2] ^ WK[1], src[3],
+        src[4] + WK[2], src[5],
+        src[6] ^ WK[3], src[7]
     };
 
+    // printf("Initial:\n");
+    // for (int i = 7; i >= 0; --i)
+    //     printf("%02x:", state[i]);
+    // puts("");
+
     u8 temp, temp2;
-    for (u8 i = 0; i < 32; i++) {
+    for (u8 i = 0; i < 31; i++) {
+        // if (i == 31) {
+        //     printf("Error!\n");
+        //     printf("Internal1 Round 32 | ");
+        //     for (int i = 7; i >= 0; --i)
+        //         printf("%02x:", state[i]);
+        //     puts("");
+        //     state[7] ^= (F0(state[6] + SK[127]));
+        //     state[5] += (F1(state[4] ^ SK[126]));
+        //     state[3] ^= (F0(state[2] + SK[125]));
+        //     state[1] += (F1(state[0] ^ SK[124]));
+        //     printf("Internal2 Round 32 | ");
+        //     for (int i = 7; i >= 0; --i)
+        //         printf("%02x:", state[i]);
+        //     puts("");
+        //     break;
+        //     printf("Error!!\n");
+        // }
+
+        printf("Round %02d | ", i);
+        for (int i = 7; i >= 0; --i)
+            printf("%02x:", state[i]);
+        puts("");
+        
         temp = state[7];
         temp2 = state[6];
 
@@ -191,16 +283,38 @@ void HIGHT_Encrypt_Dev(u8* dst, const u8* src, const u8 MK[16]) {
         state[6] = state[5] + (F1(state[4]) ^ SK[i * 4 + 2]);
 
         state[5] = state[4];
-        state[4] = state[3] + (F0(state[2]) ^ SK[i * 4 + 1]);
+        state[4] = state[3] ^ (F0(state[2]) + SK[i * 4 + 1]);
 
         state[3] = state[2]; 
         state[2] = state[1] + (F1(state[0]) ^ SK[i * 4 + 0]);
 
         state[1] = state[0];
-        state[0] =     temp + (F0(   temp2) ^ SK[i * 4 + 3]);
-        
-        // if (i == 31) {
-
-        // }
+        state[0] =     temp ^ (F0(   temp2) + SK[i * 4 + 3]);
     }
+
+    printf("Round 31 | ");
+    for (int i = 7; i >= 0; --i)
+        printf("%02x:", state[i]);
+    puts("");
+
+    state[7] ^= (F0(state[6]) + SK[127]);
+    state[5] += (F1(state[4]) ^ SK[126]);
+    state[3] ^= (F0(state[2]) + SK[125]);
+    state[1] += (F1(state[0]) ^ SK[124]);
+
+    printf("Round 32 | ");
+    for (int i = 7; i >= 0; --i)
+        printf("%02x:", state[i]);
+    puts("");
+
+    state[0] += WK[4];
+    state[2] ^= WK[5];
+    state[4] += WK[6];
+    state[6] ^= WK[7];
+
+    printf("WK FINAL | ");
+    for (int i = 7; i >= 0; --i)
+        printf("%02x:", state[i]);
+    puts("");
+    memcpy(dst, state, 8);
 }
