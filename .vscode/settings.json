@@ -79,6 +79,7 @@
   "files.associations": {
     "hight.h": "c",
     "time.h": "c",
-    "hight_config.h": "c"
+    "hight_config.h": "c",
+    "hight_utils.h": "c"
   }
 }
