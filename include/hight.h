@@ -19,8 +19,8 @@ static inline u8 F1(u8 byte) {
     return ROTL(byte, 3) ^ ROTL(byte, 4) ^ ROTL(byte, 6);
 }
 
-void HIGHT_Encrypt(u8* dst, const u8* src, const u8 MK[16]);
-void HIGHT_Decrypt(u8* dst, const u8* src, const u8 MK[16]);
-void HIGHT_Encrypt_Dev(u8* dst, const u8* src, const u8 MK[16]);
+void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]);
+void HIGHT_Decrypt(u8 dst[8], const u8 src[8], const u8 MK[16]);
+void HIGHT_Encrypt_Dev(u8 dst[8], const u8 src[8], const u8 MK[16]);
 
 #endif /* _HIGHT_H */
