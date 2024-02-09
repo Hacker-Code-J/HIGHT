@@ -4,7 +4,6 @@ LDFLAGS=
 OBJDIR=./obj
 BINDIR=./bin
 SRCDIR=./src
-VSSRCDIR=./src/aesavs
 TESTDIR=./tests
 INCDIR=./include
 
@@ -20,15 +19,16 @@ all: dir $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-$(OBJDIR)/main.o: main.c
-	$(CC) $(CFLAGS) -MMD -MP -c main.c -o $@
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
 
+# $(OBJDIR)/main.o: main.c
+# 	$(CC) $(CFLAGS) -MMD -MP -c main.c -o $@
+
 -include $(OBJS:.o=.d)
 
-$(OBJDIR)/hight_core.o: $(SRCDIR)/hight_core.c $(INCDIR)/hight.h
-$(OBJDIR)/hight_utils.o: $(SRCDIR)/hight_utils.c $(INCDIR)/hight_utils.h
+# $(OBJDIR)/hight_core.o: $(SRCDIR)/hight_core.c $(INCDIR)/hight.h
+# $(OBJDIR)/hight_utils.o: $(SRCDIR)/hight_utils.c $(INCDIR)/hight_utils.h
 
 clean:
 	rm -f $(OBJS) $(TARGET) $(OBJDIR)/*.d
