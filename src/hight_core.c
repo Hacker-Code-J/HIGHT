@@ -15,26 +15,59 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
     enc_WK[6] = MK[2];
     enc_WK[7] = MK[3];
 
-    // Initialize s array with direct assignments
-    u8 s[134] = { 0, 1, 0, 1, 1, 0, 1 };
+#if 1
+    u8 delta[128] = { 0x00, };
+    u64 state = 0b01011010; // 0x5a
+
+    delta[0] = state;
+    
+    // Generate δ array and subkeys without s array
+    for (i = 1; i < 128; i++) {
+        u8 new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+        state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+        state >>= 1;
+
+        // Assign the new value to delta[i] using the updated state
+        delta[i] = state & 0x7F;
+    }
+#endif
+#if 0
     u8 delta[128] = { 0x00, };
 
+    u8 s[134] = { 0, 1, 0, 1, 1, 0, 1 };
     delta[0] = (s[6] << 6) | (s[5] << 5) | (s[4] << 4) |
                (s[3] << 3) | (s[2] << 2) | (s[1] << 1) | s[0];
-
+    printf("0x%02xU, ", delta[0]);
     // Generate δ array and subkeys
     for (i = 1; i < 128; i++) {
         s[i + 6] = s[i + 2] ^ s[i - 1]; // XOR operation
         delta[i] = (s[i + 6] << 6) | (s[i + 5] << 5) | (s[i + 4] << 4) |
                    (s[i + 3] << 3) | (s[i + 2] << 2) | (s[i + 1] << 1) | s[i];
-    }
-
+        if (i % 8 == 0) puts("");
+        printf("0x%02xU, ", delta[i]);
+    } puts("");
+#endif
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++)
             enc_SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta[16 * i + j + 0];
         for (j = 0; j < 8; j++)
             enc_SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta[16 * i + j + 8];
     }
+#if 0
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            printf("%x, %d\n", j-i, (j-i) & 7);
+            enc_SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta[16 * i + j + 0];
+        }
+        puts("");
+        for (j = 0; j < 8; j++) {
+            printf("%d, %d\n", j-i + 8, ((j-i) & 7) + 8);
+            enc_SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta[16 * i + j + 8];
+        }
+        puts("");
+        puts("==================================================================");
+    }
+#endif
 }
 
 void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
@@ -42,13 +75,8 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     encKeySchedule(WK, SK, MK);
 
     u8 state[8];
-    // u8 state[8] = {
-    //     src[0] + WK[0], src[1],
-    //     src[2] ^ WK[1], src[3],
-    //     src[4] + WK[2], src[5],
-    //     src[6] ^ WK[3], src[7]
-    // };
     memcpy(state, src, 8);
+    
     state[0] += WK[0];
     state[2] ^= WK[1];
     state[4] += WK[2];
@@ -300,7 +328,6 @@ void keySchedule_Dev(u8 WK[8], u8 SK[128], const u8 MK[16]) {
     }
 #endif
 }
-
 
 void HIGHT_Encrypt_Dev(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     for (int i = 15; i >= 0; --i)

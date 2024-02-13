@@ -1,5 +1,12 @@
 #include "hight_utils.h"
 
+void stringToByteArray(u8* byteArray, const char* hexString) {
+    size_t length = strlen(hexString);
+    for (size_t i = 0; i < length; i += 2) {
+        sscanf(&hexString[i], "%2hhx", &byteArray[(length / 2 - 1) - (i / 2)]);
+    }
+}
+
 u64 measure_keySchedule_cycle(void (*func)(u8*, u8*, const u8*), u8* WK, u8* SK, const u8* MK) {
     u64 start, end;
     const u64 num_runs = 10000;

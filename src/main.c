@@ -10,28 +10,30 @@ void viewKeySchedule(u8* SK) {
 
 int main(void) {
 
-    // u8 MK[16] = { 0xff, 0xee, 0xdd, 0xcc,
-    //               0xbb, 0xaa, 0x99, 0x88,
-    //               0x77, 0x66, 0x55, 0x44,
-    //               0x33, 0x22, 0x11, 0x00};
+    // const char* keyString = "00112233445566778899aabbccddeeff"; // Test Vector 1
+    // const char* keyString = "ffeeddccbbaa99887766554433221100"; // Test Vector 2
+    const char* keyString = "000102030405060708090a0b0c0d0e0f"; // Test Vector 3
+    // const char* keyString = "28dbc3bc49ffd87dcfa59b11d422be7";
+    u8 MK[16] = { 0x00, };
+    stringToByteArray(MK, keyString);
 
-    u8 MK[16] = { 0x00, 0x11, 0x22, 0x33,
-                  0x44, 0x55, 0x66, 0x77,
-                  0x88, 0x99, 0xaa, 0xbb,
-                  0xcc, 0xdd, 0xee, 0xff };
+    // const char* inputString = "0000000000000000"; // Test Vector 1
+    // const char* inputString = "0011223344556677"; // Test Vector 2
+    const char* inputString = "0123456789abcdef"; // Test Vector 3
+    // const char* inputString = "b41e6be2eba84a14";
+    
+    u8 PT[8] = { 0x00, };
+    stringToByteArray(PT, inputString);
 
-    // u8 WK[8], SK[128];
+    u8 CT[8] = { 0x00, };
+    u8 myPT[8] = { 0x00, };
 
-    u8 PT[8] = { 0x77, 0x66, 0x55, 0x44,
-                 0x33, 0x22, 0x11, 0x00 };
+#if 1
     printf("  PT | ");
     for (int i = 7; i >= 0; i--) {
         printf("%02x:", PT[i]);
     }
     printf("\n");
-
-    u8 CT[8] = { 0x00, };
-    u8 myPT[8] = { 0x00, };
 
     HIGHT_Encrypt(CT, PT, MK);
 
@@ -41,9 +43,6 @@ int main(void) {
     }
     printf("\n");
 
-    // printf("ENC: %lu cycles\n", measure_encryption_cycle(HIGHT_Encrypt, CT, PT, MK));
-    // printf("ENC: %.3f µs\n", measure_encryption_time(HIGHT_Encrypt, CT, PT, MK)*1000000);
-
     HIGHT_Decrypt(myPT, CT, MK);
 
     printf("myPT | ");
@@ -51,6 +50,17 @@ int main(void) {
         printf("%02x:", myPT[i]);
     }
     printf("\n");
+
+    puts("");
+    printf("ENC: %lu cycles\n", measure_encryption_cycle(HIGHT_Encrypt, CT, PT, MK));
+    printf("ENC: %.3f µs\n", measure_encryption_time(HIGHT_Encrypt, CT, PT, MK)*1000000);
+    printf("Dec: %lu cycles\n", measure_encryption_cycle(HIGHT_Decrypt, myPT, CT, MK));
+    printf("Dec: %.3f µs\n", measure_encryption_time(HIGHT_Decrypt, myPT, CT, MK)*1000000);
+#endif
+    // for (i32 i = 0; i < 10000; i++) {
+    //     printf("%.3f\n", measure_encryption_time(HIGHT_Encrypt, CT, PT, MK)*1000000);
+    //     printf("%.3f\n", measure_encryption_time(HIGHT_Decrypt, myPT, CT, MK)*1000000);
+    // }
 
     // for (int i = 0; i < 8; i++) {
     //     for (int j = 0; j < 8; j++)
