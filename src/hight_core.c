@@ -84,11 +84,6 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
 
     // Assume F0 and F1 are already optimized and inlined
     for (u8 i = 0; i < 31; i++) {
-        // printf("Round %02d | ", i);
-        // for (int i = 7; i >= 0; --i)
-        //     printf("%02x:", state[i]);
-        // puts("");
-
         u8 t0 = state[7], t1 = state[6];
         state[7] = state[6];
         state[6] = state[5] + (F1(state[4]) ^ SK[i * 4 + 2]);
@@ -99,10 +94,7 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
         state[1] = state[0];
         state[0] = t0       ^ (F0(t1      ) + SK[i * 4 + 3]);
     }
-    // printf("Round 31 | ");
-    // for (int i = 7; i >= 0; --i)
-    //     printf("%02x:", state[i]);
-    // puts("");
+   
     state[1] += (F1(state[0]) ^ SK[124]);
     state[3] ^= (F0(state[2]) + SK[125]);
     state[5] += (F1(state[4]) ^ SK[126]);
@@ -131,18 +123,19 @@ void decKeySchedule(u8 dec_WK[8], u8 dec_SK[128], const u8 MK[16]) {
     dec_WK[6] = MK[2];
     dec_WK[7] = MK[3];
 
-    // Initialize s array with direct assignments
-    u8 s[134] = {0, 1, 0, 1, 1, 0, 1};
     u8 delta[128] = { 0x00, };
+    u64 state = 0b01011010; // 0x5a
 
-    delta[0] = (s[6] << 6) | (s[5] << 5) | (s[4] << 4) |
-               (s[3] << 3) | (s[2] << 2) | (s[1] << 1) | s[0];
-
-    // Generate δ array and subkeys
+    delta[0] = state;
+    
+    // Generate δ array and subkeys without s array
     for (i = 1; i < 128; i++) {
-        s[i + 6] = s[i + 2] ^ s[i - 1]; // XOR operation
-        delta[i] = (s[i + 6] << 6) | (s[i + 5] << 5) | (s[i + 4] << 4) |
-                   (s[i + 3] << 3) | (s[i + 2] << 2) | (s[i + 1] << 1) | s[i];
+        u8 new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+        state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+        state >>= 1;
+
+        // Assign the new value to delta[i] using the updated state
+        delta[i] = state & 0x7F;
     }
 
     for (i = 7; i >= 0; i--) {
@@ -170,7 +163,6 @@ void HIGHT_Decrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     state[7] ^= (F0(state[6]) + SK[0]); // SK[127- 127]
 
     for (i8 i = 1; i < 32; i++) {
-#if 1
         u8 temp0 = state[0];
         u8 temp2 = state[2];
         u8 temp4 = state[4];
@@ -185,8 +177,8 @@ void HIGHT_Decrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
         state[5] = temp6 - (F1(state[5]) ^ SK[i * 4 + 1]);
         state[3] = temp4 ^ (F0(state[3]) + SK[i * 4 + 2]);
         state[1] = temp2 - (F1(state[1]) ^ SK[i * 4 + 3]);
-#endif
     }
+
     state[0] -= WK[0];
     state[2] ^= WK[1];
     state[4] -= WK[2];

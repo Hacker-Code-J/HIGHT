@@ -57,7 +57,7 @@ int main(void) {
     printf("Dec: %lu cycles\n", measure_encryption_cycle(HIGHT_Decrypt, myPT, CT, MK));
     printf("Dec: %.3f µs\n", measure_encryption_time(HIGHT_Decrypt, myPT, CT, MK)*1000000);
 #endif
-    // for (i32 i = 0; i < 10000; i++) {
+    // for (i32 i = 0; i < 100; i++) {
     //     printf("%.3f\n", measure_encryption_time(HIGHT_Encrypt, CT, PT, MK)*1000000);
     //     printf("%.3f\n", measure_encryption_time(HIGHT_Decrypt, myPT, CT, MK)*1000000);
     // }
