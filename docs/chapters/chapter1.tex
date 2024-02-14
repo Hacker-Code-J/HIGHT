@@ -12,12 +12,12 @@
 		Key Size (bits) & 128/192/256 & 128 \\
 		\multirow{2}{*}{Structure} & \multirow{2}{*}{\textcolor{red}{S}ubstitution-\textcolor{red}{P}ermutation \textcolor{red}{N}etwork} & \textcolor{blue}{G}eneralized \textcolor{blue}{F}eistel \textcolor{blue}{N}etwork\\
 		&& (ARX - Add-Rotation-Xor)\\
-		Rounds & 10/12/14 (depends on key size) & 24/28/32 (depends on key size) \\
-		Design Year & 1998 & 2013 \\
+		Rounds & 10/12/14 (depends on key size) & 32 \\
 		\bottomrule
 	\end{tabular*}
 \end{table}
 
+\iffalse
 \begin{table}[h!]\centering\renewcommand{\arraystretch}{1.25} % Increase row height by 1.5 times
 	\caption{Parameters of the Block Cipher HIGHT}
 	\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries}c||ccccc}
@@ -464,3 +464,4 @@ The constant $\delta[i]\in\F_{2^{32}}$ ($i\in\set{1,\dots,7}$) is as follows:
 	}
 	\Return{$\mathsf{dst}\gets t_{N_r}$}\;
 \end{algorithm}
+\fi

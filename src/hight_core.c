@@ -23,7 +23,7 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
     
     // Generate δ array and subkeys without s array
     for (i = 1; i < 128; i++) {
-        u8 new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+        bool new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
         state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
         state >>= 1;
 
