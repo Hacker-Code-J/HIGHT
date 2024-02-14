@@ -17,7 +17,7 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
 
 #if 1
     u8 delta[128] = { 0x00, };
-    u64 state = 0b01011010; // 0x5a
+    u8 state = 0b01011010; // 0x5a
 
     delta[0] = state;
     
