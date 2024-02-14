@@ -53,6 +53,7 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
         for (j = 0; j < 8; j++)
             enc_SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta[16 * i + j + 8];
     }
+
 #if 0
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
@@ -81,9 +82,18 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     state[2] ^= WK[1];
     state[4] += WK[2];
     state[6] ^= WK[3];
-
+    printf("Initial  = ");
+    for(int i = 7; i >= 0; i--) {
+        printf("%02x", state[i]);
+    } puts("");
     // Assume F0 and F1 are already optimized and inlined
     for (u8 i = 0; i < 31; i++) {
+        if (i) {
+        printf("Round %02d = ", i);  
+            for(int i = 7; i >= 0; i--) {
+                printf("%02x", state[i]);
+            } puts("");
+        }
         u8 t0 = state[7], t1 = state[6];
         state[7] = state[6];
         state[6] = state[5] + (F1(state[4]) ^ SK[i * 4 + 2]);
@@ -100,11 +110,21 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     state[5] += (F1(state[4]) ^ SK[126]);
     state[7] ^= (F0(state[6]) + SK[127]);
 
+    printf("Round 31 = ");  
+    for(int i = 7; i >= 0; i--) {
+        printf("%02x", state[i]);
+    } puts("");
+
     state[0] += WK[4];
     state[2] ^= WK[5];
     state[4] += WK[6];
     state[6] ^= WK[7];
     
+    printf("Round 32 = ");  
+    for(int i = 7; i >= 0; i--) {
+        printf("%02x", state[i]);
+    } puts("");
+
     memcpy(dst, state, 8);
 }
 
