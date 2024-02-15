@@ -2,7 +2,7 @@
 
 void stringToByteArray(u8* byteArray, const char* hexString) {
     size_t length = strlen(hexString);
-    for (size_t i = 0; i < length; i += 2) {
+    for (size_t i = 0; i < length; i+=2) {
         sscanf(&hexString[i], "%2hhx", &byteArray[(length / 2 - 1) - (i / 2)]);
     }
 }
