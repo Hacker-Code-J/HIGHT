@@ -50,4 +50,4 @@ leak:
 comp:
 	(cd bin && ./a.out > speed.txt)
 	(cd bin && mv speed.txt ../view/)
-	(cd view && python3 compare.py)
+	(cd view && python3 compare_cycle.py)
