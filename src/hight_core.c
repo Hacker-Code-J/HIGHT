@@ -86,6 +86,7 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     for(int i = 7; i >= 0; i--) {
         printf("%02x", state[i]);
     } puts("");
+    
     // Assume F0 and F1 are already optimized and inlined
     for (u8 i = 0; i < 31; i++) {
         if (i) {
@@ -105,12 +106,17 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
         state[0] = t0       ^ (F0(t1      ) + SK[i * 4 + 3]);
     }
    
+    printf("Round 31 = ");  
+    for(int i = 7; i >= 0; i--) {
+        printf("%02x", state[i]);
+    } puts("");
+
     state[1] += (F1(state[0]) ^ SK[124]);
     state[3] ^= (F0(state[2]) + SK[125]);
     state[5] += (F1(state[4]) ^ SK[126]);
     state[7] ^= (F0(state[6]) + SK[127]);
 
-    printf("Round 31 = ");  
+    printf("Round 32 = ");  
     for(int i = 7; i >= 0; i--) {
         printf("%02x", state[i]);
     } puts("");
@@ -120,7 +126,7 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     state[4] += WK[6];
     state[6] ^= WK[7];
     
-    printf("Round 32 = ");  
+    printf("CT = ");  
     for(int i = 7; i >= 0; i--) {
         printf("%02x", state[i]);
     } puts("");

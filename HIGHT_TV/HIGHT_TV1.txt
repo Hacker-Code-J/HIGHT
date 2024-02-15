@@ -1,6 +1,5 @@
 KEY = 00112233445566778899aabbccddeeff
 PT = 0000000000000000
-
 Initial  = 0000001100220033
 Round 01 = 00ce1138223f33e7
 Round 02 = cee138ef3fa3e78a
@@ -32,7 +31,6 @@ Round 27 = 134617f1bfd57db2
 Round 28 = 467bf187d5c4b277
 Round 29 = 7b3187d2c4f5772b
 Round 30 = 315dd246f5482bde
-Round 31 = 003818d1d9a103f3
-Round 32 = 00f418aed94f03f2
-
+Round 31 = 5d3846d148a1def3
+Round 32 = 003818d1d9a103f3
 CT = 00f418aed94f03f2
