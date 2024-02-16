@@ -38,6 +38,13 @@ int main(void) {
     for (int i = 7; i >= 0; i--) {
         printf("%02x:", myPT[i]);
     } puts("");
+
+    measure_cpu_time(HIGHT_Encrypt, CT, PT, MK);
+    measure_cpu_time(HIGHT_Decrypt, CT, PT, MK);
+
+    measure_memory_usage(HIGHT_Encrypt, CT, PT, MK);
+    measure_memory_usage(HIGHT_Decrypt, CT, PT, MK);
+    measure_total_memory_usage(HIGHT_Decrypt, CT, PT, MK);
 #if 0
     printf("KEY = ");
     for (int i = 15; i >= 0; i--) {
