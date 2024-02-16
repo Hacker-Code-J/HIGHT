@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
+#include <sys/resource.h>
+#include <unistd.h>
 
 #ifndef _HIGHT_CONFIG_H
 #define _HIGHT_CONFIG_H

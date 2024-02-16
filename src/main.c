@@ -15,7 +15,7 @@ int main(void) {
     // const char* keyString = "000102030405060708090a0b0c0d0e0f"; // Test Vector 3
     const char* keyString = "28dbc3bc49ffd87dcfa509b11d422be7"; // Test Vector 4
     u8 MK[16] = { 0x00, };
-    stringToByteArray(MK, keyString);
+    stringToByte(MK, keyString);
 
     // const char* inputString = "0000000000000000"; // Test Vector 1
     // const char* inputString = "0011223344556677"; // Test Vector 2
@@ -23,12 +23,29 @@ int main(void) {
     const char* inputString = "b41e6be2eba84a14"; // Test Vector 4
     
     u8 PT[8] = { 0x00, };
-    stringToByteArray(PT, inputString);
+    stringToByte(PT, inputString);
 
     u8 CT[8] = { 0x00, };
     u8 myPT[8] = { 0x00, };
+    HIGHT_Encrypt(CT, PT, MK);
+    HIGHT_Decrypt(myPT, CT, MK);
+    for (int i = 7; i >= 0; i--) {
+        printf("%02x:", PT[i]);
+    } puts("");
+    for (int i = 7; i >= 0; i--) {
+        printf("%02x:", CT[i]);
+    } puts("");
+    for (int i = 7; i >= 0; i--) {
+        printf("%02x:", myPT[i]);
+    } puts("");
 
-#if 1
+    measure_cpu_time(HIGHT_Encrypt, CT, PT, MK);
+    measure_cpu_time(HIGHT_Decrypt, CT, PT, MK);
+
+    measure_memory_usage(HIGHT_Encrypt, CT, PT, MK);
+    measure_memory_usage(HIGHT_Decrypt, CT, PT, MK);
+    measure_total_memory_usage(HIGHT_Decrypt, CT, PT, MK);
+#if 0
     printf("KEY = ");
     for (int i = 15; i >= 0; i--) {
         printf("%02x", MK[i]);
@@ -60,9 +77,9 @@ int main(void) {
     // printf("Dec: %lu cycles\n", measure_encryption_cycle(HIGHT_Decrypt, myPT, CT, MK));
     // printf("Dec: %.3f µs\n", measure_encryption_time(HIGHT_Decrypt, myPT, CT, MK)*1000000);
 #endif
-    // for (i32 i = 0; i < 100; i++) {
-    //     printf("%.3f\n", measure_encryption_time(HIGHT_Encrypt, CT, PT, MK)*1000000);
-    //     printf("%.3f\n", measure_encryption_time(HIGHT_Decrypt, myPT, CT, MK)*1000000);
+    // for (i32 i = 0; i < 10000; i++) {
+    //     printf("%ld\n", measure_encryption_cycle(HIGHT_Encrypt, CT, PT, MK));
+    //     printf("%ld\n", measure_encryption_cycle(HIGHT_Decrypt, myPT, CT, MK));
     // }
 
     // for (int i = 0; i < 8; i++) {
