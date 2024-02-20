@@ -7,6 +7,26 @@ void stringToByte(u8* byteArray, const char* hexString) {
     }
 }
 
+u64 measure_cycles(void (*func)(u8*, const u8*, const u8*), u8* dst, const u8* src, const u8* MK) {
+    u32 ui;
+    u64 start, end;
+    const u64 num = 10000;
+    func(dst, src, MK);
+
+    // Measure the start time
+    start = __rdtscp(&ui); // Serializing read of time stamp counter
+
+    // Execute the function being measured
+    for (u64 i = 0; i < num; i++)
+        func(dst, src, MK);
+
+    // Measure the end time
+    end = __rdtscp(&ui); // Another serializing read
+
+    return (end - start) / num; // Return the difference, which is the cycle count
+}
+
+#if 0
 u64 measure_keySchedule_cycle(void (*func)(u8*, u8*, const u8*), u8* WK, u8* SK, const u8* MK) {
     u64 start, end;
     const u64 num_runs = 10000;
@@ -157,3 +177,4 @@ void measure_total_memory_usage(void (*func)(u8*, const u8*, const u8*), u8* dst
     printf("Total memory used: Static = %zu, Dynamic = %zu, Stack = %zu, Total = %zu bytes\n", 
             static_memory, dynamic_memory, stack_memory, total_memory);
 }
+#endif
