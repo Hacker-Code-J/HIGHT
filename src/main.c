@@ -31,12 +31,12 @@ int main(void) {
     HIGHT_Decrypt(myPT, CT, MK);
 
     u64 enc_cycles, dec_cycles;
-    for (u32 i = 0; i < 12000; i++) {
+    for (u32 i = 0; i < 1200; i++) {
         assign_rand(MK, 16);
         assign_rand(PT, 8);
         enc_cycles = measure_cycles(HIGHT_Encrypt, CT, PT, MK);
         dec_cycles = measure_cycles(HIGHT_Decrypt, myPT, PT, MK);
-        if (i >= 1000 && i < 11000) {
+        if (i >= 100 && i < 1100) {
             printf("%" PRIu64 "\n", enc_cycles);
             printf("%" PRIu64 "\n", dec_cycles);
             // printf("%llu\n", (long long)cycles / (long long)SIZE);

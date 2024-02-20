@@ -84,26 +84,26 @@ void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
     // WK[6] = MK[2];
     // WK[7] = MK[3];
 
-    // u8 delta[128] = { 0x00, };
-    // u8 rCon = 0x5a; // 0b01011010
+    u8 delta[128] = { 0x00, };
+    u8 rCon = 0x5a; // 0b01011010
 
-    // delta[0] = rCon;
+    delta[0] = rCon;
     
-    // // Generate δ array and subkeys without s array
-    // for (i32 i = 1; i < 128; i++) {
-    //     bool new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
-    //     rCon = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
-    //     rCon >>= 1;
+    // Generate δ array and subkeys without s array
+    for (i32 i = 1; i < 128; i++) {
+        bool new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+        rCon = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+        rCon >>= 1;
 
-    //     // Assign the new value to delta[i] using the updated state
-    //     delta[i] = rCon & 0x7F;
-    // }
+        // Assign the new value to delta[i] using the updated state
+        delta[i] = rCon & 0x7F;
+    }
 
     for (u8 i = 0; i < 8; i++) {
         for (u8 j = 0; j < 8; j++)
-            SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta_table[16 * i + j + 0];
+            SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta[16 * i + j + 0];
         for (u8 j = 0; j < 8; j++)
-            SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta_table[16 * i + j + 8];
+            SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta[16 * i + j + 8];
     }
 
     u8 state[8];
