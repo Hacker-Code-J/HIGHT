@@ -7,7 +7,10 @@
 #include <stdbool.h>
 #include <time.h>
 #include <sys/resource.h>
+#include <inttypes.h>
+#include <ctype.h>
 #include <unistd.h>
+#include <x86intrin.h>
 
 #ifndef _HIGHT_CONFIG_H
 #define _HIGHT_CONFIG_H

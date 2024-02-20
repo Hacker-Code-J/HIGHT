@@ -15,20 +15,20 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
     enc_WK[6] = MK[2];
     enc_WK[7] = MK[3];
 
-    u8 delta[128] = { 0x00, };
-    u8 state = 0b01011010; // 0x5a
+    // u8 delta[128] = { 0x00, };
+    // u8 state = 0b01011010; // 0x5a
 
-    delta[0] = state;
+    // delta[0] = state;
     
-    // Generate δ array and subkeys without s array
-    for (i = 1; i < 128; i++) {
-        bool new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
-        state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
-        state >>= 1;
+    // // Generate δ array and subkeys without s array
+    // for (i = 1; i < 128; i++) {
+    //     bool new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+    //     state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+    //     state >>= 1;
 
-        // Assign the new value to delta[i] using the updated state
-        delta[i] = state & 0x7F;
-    }
+    //     // Assign the new value to delta[i] using the updated state
+    //     delta[i] = state & 0x7F;
+    // }
 
 
     // u8 delta[128] = { 0x00, };
@@ -48,9 +48,9 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++)
-            enc_SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta[16 * i + j + 0];
+            enc_SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta_table[16 * i + j + 0];
         for (j = 0; j < 8; j++)
-            enc_SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta[16 * i + j + 8];
+            enc_SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta_table[16 * i + j + 8];
     }
 
     // for (i = 0; i < 8; i++) {
@@ -70,8 +70,41 @@ void encKeySchedule(u8 enc_WK[8], u8 enc_SK[128], const u8 MK[16]) {
 }
 
 void HIGHT_Encrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
-    u8 WK[8], SK[128];
-    encKeySchedule(WK, SK, MK);
+    u8 WK[8] = {
+        MK[12], MK[13], MK[14], MK[15],
+        MK[ 0], MK[ 1], MK[ 2], MK[ 3]
+    };
+    u8 SK[128];
+    // WK[0] = MK[12];
+    // WK[1] = MK[13];
+    // WK[2] = MK[14];
+    // WK[3] = MK[15];
+    // WK[4] = MK[0];
+    // WK[5] = MK[1];
+    // WK[6] = MK[2];
+    // WK[7] = MK[3];
+
+    // u8 delta[128] = { 0x00, };
+    // u8 rCon = 0x5a; // 0b01011010
+
+    // delta[0] = rCon;
+    
+    // // Generate δ array and subkeys without s array
+    // for (i32 i = 1; i < 128; i++) {
+    //     bool new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+    //     rCon = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+    //     rCon >>= 1;
+
+    //     // Assign the new value to delta[i] using the updated state
+    //     delta[i] = rCon & 0x7F;
+    // }
+
+    for (u8 i = 0; i < 8; i++) {
+        for (u8 j = 0; j < 8; j++)
+            SK[16 * i + j + 0] = MK[((j - i) & 7) + 0] + delta_table[16 * i + j + 0];
+        for (u8 j = 0; j < 8; j++)
+            SK[16 * i + j + 8] = MK[((j - i) & 7) + 8] + delta_table[16 * i + j + 8];
+    }
 
     u8 state[8];
     memcpy(state, src, 8);
@@ -147,32 +180,68 @@ void decKeySchedule(u8 dec_WK[8], u8 dec_SK[128], const u8 MK[16]) {
     dec_WK[6] = MK[2];
     dec_WK[7] = MK[3];
 
-    u8 delta[128] = { 0x00, };
-    u64 state = 0b01011010; // 0x5a
+    // u8 delta[128] = { 0x00, };
+    // u8 state = 0b01011010; // 0x5a
 
-    delta[0] = state;
+    // delta[0] = state;
     
-    // Generate δ array and subkeys without s array
-    for (i = 1; i < 128; i++) {
-        u8 new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
-        state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
-        state >>= 1;
+    // // Generate δ array and subkeys without s array
+    // for (i = 1; i < 128; i++) {
+    //     u8 new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+    //     state = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+    //     state >>= 1;
 
-        // Assign the new value to delta[i] using the updated state
-        delta[i] = state & 0x7F;
-    }
+    //     // Assign the new value to delta[i] using the updated state
+    //     delta[i] = state & 0x7F;
+    // }
 
     for (i = 7; i >= 0; i--) {
         for (j = 7; j >= 0; j--)
-            dec_SK[127 - (16 * i + j + 8)] = MK[((j - i) & 7) + 8] + delta[16 * i + j + 8];
+            dec_SK[127 - (16 * i + j + 8)] = MK[((j - i) & 7) + 8] + delta_table[16 * i + j + 8];
         for (j = 7; j >= 0; j--)
-            dec_SK[127 - (16 * i + j + 0)] = MK[((j - i) & 7) + 0] + delta[16 * i + j + 0];
+            dec_SK[127 - (16 * i + j + 0)] = MK[((j - i) & 7) + 0] + delta_table[16 * i + j + 0];
     }
 }
 
 void HIGHT_Decrypt(u8 dst[8], const u8 src[8], const u8 MK[16]) {
-    u8 WK[8], SK[128];
-    decKeySchedule(WK, SK, MK);
+    u8 WK[8] = {
+        MK[12], MK[13], MK[14], MK[15],
+        MK[ 0], MK[ 1], MK[ 2], MK[ 3]
+    };
+    
+    u8 SK[128];
+    // decKeySchedule(WK, SK, MK);
+
+    // WK[0] = MK[12];
+    // WK[1] = MK[13];
+    // WK[2] = MK[14];
+    // WK[3] = MK[15];
+    // WK[4] = MK[0];
+    // WK[5] = MK[1];
+    // WK[6] = MK[2];
+    // WK[7] = MK[3];
+
+    // u8 delta[128] = { 0x00, };
+    // u8 rCon = 0x5a;
+
+    // delta[0] = rCon;
+    
+    // // Generate δ array and subkeys without s array
+    // for (u8 i = 1; i < 128; i++) {
+    //     u8 new_bit = ((delta[i-1] >> 3) & 0x01) ^ (delta[i-1] & 0x01);
+    //     rCon = (u8)(new_bit << 7) | (u8)(delta[i-1] & 0x7F);
+    //     rCon >>= 1;
+
+    //     // Assign the new value to delta[i] using the updated state
+    //     delta[i] = rCon & 0x7F;
+    // }
+
+    for (i8 i = 7; i >= 0; i--) {
+        for (i8 j = 7; j >= 0; j--)
+            SK[127 - (16 * i + j + 8)] = MK[((j - i) & 7) + 8] + delta_table[16 * i + j + 8];
+        for (i8 j = 7; j >= 0; j--)
+            SK[127 - (16 * i + j + 0)] = MK[((j - i) & 7) + 0] + delta_table[16 * i + j + 0];
+    }
 
     u8 state[8] = { 0x00, };
     memcpy(state, src, 8);

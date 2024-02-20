@@ -80,6 +80,9 @@
     "hight.h": "c",
     "time.h": "c",
     "hight_config.h": "c",
-    "hight_utils.h": "c"
+    "hight_utils.h": "c",
+    "inttypes.h": "c",
+    "x86intrin.h": "c",
+    "x86gprintrin.h": "c"
   }
 }

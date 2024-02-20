@@ -9,7 +9,7 @@ void viewKeySchedule(u8* SK) {
 }
 
 int main(void) {
-
+#if 1
     // const char* keyString = "00112233445566778899aabbccddeeff"; // Test Vector 1
     // const char* keyString = "ffeeddccbbaa99887766554433221100"; // Test Vector 2
     // const char* keyString = "000102030405060708090a0b0c0d0e0f"; // Test Vector 3
@@ -29,22 +29,36 @@ int main(void) {
     u8 myPT[8] = { 0x00, };
     HIGHT_Encrypt(CT, PT, MK);
     HIGHT_Decrypt(myPT, CT, MK);
-    for (int i = 7; i >= 0; i--) {
-        printf("%02x:", PT[i]);
-    } puts("");
-    for (int i = 7; i >= 0; i--) {
-        printf("%02x:", CT[i]);
-    } puts("");
-    for (int i = 7; i >= 0; i--) {
-        printf("%02x:", myPT[i]);
-    } puts("");
 
-    measure_cpu_time(HIGHT_Encrypt, CT, PT, MK);
-    measure_cpu_time(HIGHT_Decrypt, CT, PT, MK);
+    u64 enc_cycles, dec_cycles;
+    for (u32 i = 0; i < 12000; i++) {
+        assign_rand(MK, 16);
+        assign_rand(PT, 8);
+        enc_cycles = measure_cycles(HIGHT_Encrypt, CT, PT, MK);
+        dec_cycles = measure_cycles(HIGHT_Decrypt, myPT, PT, MK);
+        if (i >= 1000 && i < 11000) {
+            printf("%" PRIu64 "\n", enc_cycles);
+            printf("%" PRIu64 "\n", dec_cycles);
+            // printf("%llu\n", (long long)cycles / (long long)SIZE);
+        }
+    }
+    // for (int i = 7; i >= 0; i--) {
+    //     printf("%02x:", PT[i]);
+    // } puts("");
+    // for (int i = 7; i >= 0; i--) {
+    //     printf("%02x:", CT[i]);
+    // } puts("");
+    // for (int i = 7; i >= 0; i--) {
+    //     printf("%02x:", myPT[i]);
+    // } puts("");
 
-    measure_memory_usage(HIGHT_Encrypt, CT, PT, MK);
-    measure_memory_usage(HIGHT_Decrypt, CT, PT, MK);
-    measure_total_memory_usage(HIGHT_Decrypt, CT, PT, MK);
+    // measure_cpu_time(HIGHT_Encrypt, CT, PT, MK);
+    // measure_cpu_time(HIGHT_Decrypt, CT, PT, MK);
+
+    // measure_memory_usage(HIGHT_Encrypt, CT, PT, MK);
+    // measure_memory_usage(HIGHT_Decrypt, CT, PT, MK);
+    // measure_total_memory_usage(HIGHT_Decrypt, CT, PT, MK);
+#endif
 #if 0
     printf("KEY = ");
     for (int i = 15; i >= 0; i--) {
@@ -84,9 +98,9 @@ int main(void) {
 
     // for (int i = 0; i < 8; i++) {
     //     for (int j = 0; j < 8; j++)
-    //         printf("SK[%d] = MK[%d] + delta[%d]\n", 16 * i + j + 0, ((j - i) & 7) + 0, 16 * i + j + 0);
+    //         printf("SK[%03d] = MK[%02d] + delta[%03d]\n", 16 * i + j + 0, ((j - i) & 7) + 0, 16 * i + j + 0);
     //     for (int j = 0; j < 8; j++)
-    //         printf("SK[%d] = MK[%d] + delta[%d]\n", 16 * i + j + 8, ((j - i) & 7) + 8, 16 * i + j + 8);
+    //         printf("SK[%03d] = MK[%02d] + delta[%03d]\n", 16 * i + j + 8, ((j - i) & 7) + 8, 16 * i + j + 8);
     // }
 
     // puts("");
